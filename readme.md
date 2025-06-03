@@ -71,7 +71,6 @@ This project is licensed under the MIT License.
 ---
 
 QuickLearnkit makes machine learning imports effortless—so you can focus on building models, not writing complex import statements! 🚀
-```
 
 
 
