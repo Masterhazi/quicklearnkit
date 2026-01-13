@@ -8,7 +8,7 @@ QuickLearnkit is a lightweight machine learning wrapper designed to simplify mod
 Install QuickLearnkit using pip:
 
 ```bash
-pip install quicklearn
+pip install quicklearnkit
 ```
 
 ## Quick Model Imports
@@ -71,6 +71,7 @@ This project is licensed under the MIT License.
 ---
 
 QuickLearnkit makes machine learning imports effortless—so you can focus on building models, not writing complex import statements! 🚀
+
 
 
 
