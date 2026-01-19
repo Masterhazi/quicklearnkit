@@ -3,7 +3,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-# ---------------- INTERNAL HELPER ---------------- #
+# ---------------- INTERNAL HELPERS ---------------- #
+
+def _show_flag(val):
+    """Normalize truthy string/boolean flags."""
+    return str(val).lower() in ("yes", "y", "true", "1")
+
 
 def _add_value_labels(ax, fmt="{:.2f}", offset=(0, 3)):
     """
@@ -18,7 +23,7 @@ def _add_value_labels(ax, fmt="{:.2f}", offset=(0, 3)):
     offset : tuple
         (x, y) pixel offset for annotations
     """
-    # Bars (barplot, countplot, hist bars)
+    # Bars (barplot, countplot, histogram bars)
     for container in ax.containers:
         ax.bar_label(container, fmt=fmt, padding=3)
 
@@ -40,10 +45,6 @@ def _add_value_labels(ax, fmt="{:.2f}", offset=(0, 3)):
             )
 
 
-def _show_flag(val):
-    return str(val).lower() in ("yes", "y", "true", "1")
-
-
 # ---------------- PUBLIC API ---------------- #
 
 def bar_plot(
@@ -53,14 +54,21 @@ def bar_plot(
     title=None,
     show_values="no",
     fmt="{:.1f}",
-    show=True
+    show=True,
+    **kwargs
 ):
     """
     Draw a bar plot with optional value labels.
 
-    Returns matplotlib Axes for further customization.
+    Supports all seaborn.barplot parameters via **kwargs
+    (e.g., hue, palette, dodge, estimator, errorbar, etc.)
+
+    Returns
+    -------
+    matplotlib.axes.Axes
+        Axes object for further customization
     """
-    ax = sns.barplot(data=data, x=x, y=y)
+    ax = sns.barplot(data=data, x=x, y=y, **kwargs)
 
     if title:
         ax.set_title(title)
@@ -81,14 +89,20 @@ def line_plot(
     title=None,
     show_values="no",
     fmt="{:.2f}",
-    show=True
+    show=True,
+    **kwargs
 ):
     """
     Draw a line plot with optional value labels.
 
-    Returns matplotlib Axes for further customization.
+    Supports all seaborn.lineplot parameters via **kwargs
+    (e.g., hue, style, size, palette, estimator, ci, etc.)
+
+    Returns
+    -------
+    matplotlib.axes.Axes
     """
-    ax = sns.lineplot(data=data, x=x, y=y, marker="o")
+    ax = sns.lineplot(data=data, x=x, y=y, marker="o", **kwargs)
 
     if title:
         ax.set_title(title)
@@ -109,14 +123,20 @@ def scatter_plot(
     title=None,
     show_values="no",
     fmt="{:.2f}",
-    show=True
+    show=True,
+    **kwargs
 ):
     """
     Draw a scatter plot with optional value labels.
 
-    Returns matplotlib Axes for further customization.
+    Supports all seaborn.scatterplot parameters via **kwargs
+    (e.g., hue, style, size, palette, legend, etc.)
+
+    Returns
+    -------
+    matplotlib.axes.Axes
     """
-    ax = sns.scatterplot(data=data, x=x, y=y)
+    ax = sns.scatterplot(data=data, x=x, y=y, **kwargs)
 
     if title:
         ax.set_title(title)
@@ -135,14 +155,20 @@ def count_plot(
     x,
     title=None,
     show_values="no",
-    show=True
+    show=True,
+    **kwargs
 ):
     """
     Draw a count plot with optional value labels.
 
-    Returns matplotlib Axes for further customization.
+    Supports all seaborn.countplot parameters via **kwargs
+    (e.g., hue, palette, order, dodge, etc.)
+
+    Returns
+    -------
+    matplotlib.axes.Axes
     """
-    ax = sns.countplot(data=data, x=x)
+    ax = sns.countplot(data=data, x=x, **kwargs)
 
     if title:
         ax.set_title(title)
@@ -164,14 +190,20 @@ def box_plot(
     title=None,
     show_values="no",
     fmt="{:.2f}",
-    show=True
+    show=True,
+    **kwargs
 ):
     """
     Draw a box plot. If show_values is enabled, display mean value(s).
 
-    Returns matplotlib Axes for further customization.
+    Supports all seaborn.boxplot parameters via **kwargs
+    (e.g., hue, palette, order, width, etc.)
+
+    Returns
+    -------
+    matplotlib.axes.Axes
     """
-    ax = sns.boxplot(data=data, x=x, y=y)
+    ax = sns.boxplot(data=data, x=x, y=y, **kwargs)
 
     if title:
         ax.set_title(title)
@@ -209,14 +241,20 @@ def hist_plot(
     title=None,
     show_values="no",
     fmt="{:.0f}",
-    show=True
+    show=True,
+    **kwargs
 ):
     """
     Draw a histogram. If show_values is enabled, display bin counts.
 
-    Returns matplotlib Axes for further customization.
+    Supports all seaborn.histplot parameters via **kwargs
+    (e.g., hue, palette, kde, stat, multiple, element, etc.)
+
+    Returns
+    -------
+    matplotlib.axes.Axes
     """
-    ax = sns.histplot(data=data, x=x, bins=bins)
+    ax = sns.histplot(data=data, x=x, bins=bins, **kwargs)
 
     if title:
         ax.set_title(title)

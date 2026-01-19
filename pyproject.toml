@@ -16,7 +16,9 @@ dependencies = [
     "numpy",
     "pandas",
     "scikit-learn",
-    "xgboost"
+    "xgboost",
+    "seaborn",
+    "matplotlib"
 ]
 
 [tool.setuptools.packages.find]
