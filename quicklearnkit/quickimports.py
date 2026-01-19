@@ -11,12 +11,21 @@ from .classifier import LogisticRegressionmodel, KNeighborsClassifiermodel, Deci
 from .utils import create_random, ProbabilisticImputer
 from .randomizer import Sampler
 from .split import train_test_split
+from .plotting import (
+    bar_plot,
+    line_plot,
+    scatter_plot,
+    count_plot,
+    box_plot,
+    hist_plot
+)
 __all__=[
     'LinearRegressionmodel','LogisticRegressionmodel', 'KNNRegressionmodel','GradientBoostingRegressionmodel',
     'AdaBoostRegressionmodel', 'XGBoostRegressionmodel', 'ElasticNetRegressionmodel',
     'DecisionTreeRegressionmodel', 'RandomForestRegressionmodel',
     'KNeighborsClassifiermodel', 'DecisionTreeClassifiermodel', 'RandomForestClassifiermodel','AdaBoostClassifiermodel', 
     'GradientBoostingClassifiermodel', 'XGBClassifiermodel', 'SVClassifiermodel',
-    'create_random', 'Sampler', 'train_test_split', "ProbabilisticImputer",
+    'create_random', 'Sampler', 'train_test_split', "ProbabilisticImputer","bar_plot", "line_plot", "scatter_plot", "count_plot", "box_plot",
+    "hist_plot",
 ]
 
