@@ -1,27 +1,66 @@
-
 # QuickLearnKit
 
-QuickLearnKit is a lightweight, learning-first machine learning utilities library designed to simplify model imports and streamline common ML workflows. No more deep module navigation—import models and tools effortlessly and start building.
+QuickLearnKit is a **learning-first machine learning utilities library** designed to make common ML and data science workflows simple, readable, and beginner-friendly — without blocking advanced users from full customization.
 
-It focuses on removing *mechanical friction* so students and practitioners can spend more time understanding concepts, not fighting syntax.
+The philosophy is:
+
+> **Remove mechanical friction so students can focus on concepts, not syntax.**
+
+QuickLearnKit provides:
+
+* Easy model imports
+* Random sampling utilities
+* Train–test splitting
+* Probabilistic, group-aware imputation
+* Teaching-friendly plotting with optional value labels
 
 ---
 
 ## Installation
 
-Install QuickLearnKit using pip:
-
 ```bash
 pip install quicklearnkit
-````
+```
 
 ---
 
-## Quick Model Imports
+## Quick Start
 
-QuickLearnKit provides seamless access to essential machine learning models with minimal syntax. Simply import and initialize models without the usual clutter.
+```python
+from quicklearnkit import (
+    Sampler,
+    train_test_split,
+    ProbabilisticImputer,
+    bar_plot
+)
 
-### Example Usage
+import seaborn as sns
+
+# Load example dataset
+df = sns.load_dataset("titanic")
+
+# Sample data
+sampler = Sampler(df, n=5, random_state=42)
+print(sampler.sample())
+
+# Split data
+train, test = train_test_split(df, test_size=0.25)
+
+# Impute missing values
+imputer = ProbabilisticImputer("pclass", "deck", random_state=42)
+df_imputed = imputer.fit_transform(df)
+
+# Plot
+bar_plot(df, x="class", y="fare", show_values="yes")
+```
+
+---
+
+# Model Imports
+
+QuickLearnKit allows you to import commonly used machine learning models without navigating deep module paths.
+
+### Example
 
 ```python
 from quicklearnkit import (
@@ -32,12 +71,10 @@ from quicklearnkit import (
     GradientBoostingClassifiermodel
 )
 
-# Initialize models directly
 lr_model = LinearRegressionmodel()
 rf_model = RandomForestRegressionmodel()
 xgb_model = XGBoostRegressionmodel()
 
-# Initialize classifiers
 knn_classifier = KNeighborsClassifiermodel()
 gb_classifier = GradientBoostingClassifiermodel()
 ```
@@ -46,91 +83,144 @@ gb_classifier = GradientBoostingClassifiermodel()
 
 ## Supported Models
 
-QuickLearnKit offers easy access to commonly used supervised learning models:
-
 ### Regression Models
 
-* Linear Regression (`LinearRegressionmodel()`)
-* K-Nearest Neighbors Regression (`KNNRegressionmodel()`)
-* Decision Tree Regression (`DecisionTreeRegressionmodel()`)
-* Random Forest Regression (`RandomForestRegressionmodel()`)
-* Gradient Boosting Regression (`GradientBoostingRegressionmodel()`)
-* AdaBoost Regression (`AdaBoostRegressionmodel()`)
-* XGBoost Regression (`XGBoostRegressionmodel()`)
-* ElasticNet Regression (`ElasticNetRegressionmodel()`)
+* `LinearRegressionmodel()`
+* `KNNRegressionmodel()`
+* `DecisionTreeRegressionmodel()`
+* `RandomForestRegressionmodel()`
+* `GradientBoostingRegressionmodel()`
+* `AdaBoostRegressionmodel()`
+* `XGBoostRegressionmodel()`
+* `ElasticNetRegressionmodel()`
 
 ### Classification Models
 
-* Logistic Regression (`LogisticRegressionmodel()`)
-* K-Nearest Neighbors Classifier (`KNeighborsClassifiermodel()`)
-* Decision Tree Classifier (`DecisionTreeClassifiermodel()`)
-* Random Forest Classifier (`RandomForestClassifiermodel()`)
-* AdaBoost Classifier (`AdaBoostClassifiermodel()`)
-* Gradient Boosting Classifier (`GradientBoostingClassifiermodel()`)
-* XGBoost Classifier (`XGBClassifiermodel()`)
-* Support Vector Classifier (`SVClassifiermodel()`)
+* `LogisticRegressionmodel()`
+* `KNeighborsClassifiermodel()`
+* `DecisionTreeClassifiermodel()`
+* `RandomForestClassifiermodel()`
+* `AdaBoostClassifiermodel()`
+* `GradientBoostingClassifiermodel()`
+* `XGBClassifiermodel()`
+* `SVClassifiermodel()`
 
 ---
 
-## Utilities & Workflow Tools
+# Utilities
 
-Beyond models, QuickLearnKit provides practical tools to support the full machine learning workflow.
+## 1. Sampler
 
----
+The `Sampler` class allows you to randomly select elements from:
 
-### 🔀 Random Sampling — `Sampler`
+* Python lists
+* NumPy arrays
+* pandas DataFrames
 
-Randomly sample from lists, NumPy arrays, or pandas DataFrames. Supports both **stateless (reproducible)** and **stateful (streaming / simulation)** modes.
+It supports both **stateless** (reproducible) and **stateful** (streaming/simulation) modes.
+
+### Initialization
+
+```python
+Sampler(data, n=1, random_state=None, replace=False, axis=0, stateful=False)
+```
+
+### Parameters Explained
+
+| Parameter      | Type                                  | Description                                                                                      |
+| -------------- | ------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `data`         | list, numpy.ndarray, pandas.DataFrame | The dataset to sample from                                                                       |
+| `n`            | int                                   | Number of samples to return                                                                      |
+| `random_state` | int or None                           | Seed for reproducibility. Same seed = same result                                                |
+| `replace`      | bool                                  | If `True`, sampling is done **with replacement** (duplicates allowed). If `False`, no duplicates |
+| `axis`         | int                                   | Only applies to DataFrames. `0` = sample rows, `1` = sample columns                              |
+| `stateful`     | bool                                  | If `True`, RNG state continues across calls. If `False`, sampling is reproducible on every call  |
+
+### Example
 
 ```python
 from quicklearnkit import Sampler
 import seaborn as sns
 
-df = sns.load_dataset("titanic")
+df = sns.load_dataset("tips")
 
-sampler = Sampler(df, n=5, random_state=42)
-sampled_data = sampler.sample()
+sampler = Sampler(df, n=3, random_state=42, replace=False)
 
-print(sampled_data)
+sample1 = sampler.sample()
+sample2 = sampler.sample()  # Same output if stateful=False
 ```
 
 ---
 
-### ✂️ Train–Test Splitting — `train_test_split`
+## 2. Train–Test Split
 
 Split datasets into training and testing sets with support for:
 
 * Shuffling
 * Stratification
-* NumPy arrays and pandas DataFrames
+* NumPy arrays
+* pandas DataFrames
+
+### Function
+
+```python
+train_test_split(data, test_size=0.25, shuffle=True, stratify=None, random_state=None)
+```
+
+### Parameters Explained
+
+| Parameter      | Type                           | Description                                                |
+| -------------- | ------------------------------ | ---------------------------------------------------------- |
+| `data`         | array-like or pandas.DataFrame | Dataset to split                                           |
+| `test_size`    | float                          | Proportion of data to use as test set (e.g., `0.25` = 25%) |
+| `shuffle`      | bool                           | If `True`, data is shuffled before splitting               |
+| `stratify`     | array-like or str              | Column or labels to preserve class distribution in splits  |
+| `random_state` | int or None                    | Seed for reproducibility                                   |
+
+### Example
 
 ```python
 from quicklearnkit import train_test_split
-import numpy as np
 
-X = np.arange(20).reshape(10, 2)
-
-X_train, X_test = train_test_split(
-    X,
-    test_size=0.25,
-    shuffle=True,
-    random_state=42
-)
-
-print(X_train.shape, X_test.shape)
+train, test = train_test_split(df, test_size=0.3, shuffle=True, random_state=42)
 ```
 
 ---
 
-### 🎲 Probabilistic Imputation — `ProbabilisticImputer`
+## 3. ProbabilisticImputer
 
-A group-aware, probabilistic categorical imputer that learns conditional distributions and samples missing values in a **reproducible** way by default.
+A **group-aware, probabilistic categorical imputer**. It learns probability distributions from observed data and fills missing values by sampling from those distributions.
 
-This is especially useful for:
+This allows:
 
-* Teaching how distributions work
-* Simulating realistic missing data handling
-* Data augmentation and robustness testing
+* Realistic missing data handling
+* Teaching probability-based imputation
+* Reproducible preprocessing
+
+### Initialization
+
+```python
+ProbabilisticImputer(group_col, target_col, random_state=None, stateful=False)
+```
+
+### Parameters Explained
+
+| Parameter      | Type        | Description                                                                                            |
+| -------------- | ----------- | ------------------------------------------------------------------------------------------------------ |
+| `group_col`    | str         | Column used to group data (e.g., class, category)                                                      |
+| `target_col`   | str         | Column where missing values will be imputed                                                            |
+| `random_state` | int or None | Seed for reproducibility                                                                               |
+| `stateful`     | bool        | If `True`, RNG state advances across calls (useful for simulation). If `False`, output is reproducible |
+
+### Methods
+
+| Method              | Description                                        |
+| ------------------- | -------------------------------------------------- |
+| `fit(df)`           | Learns probability distributions from known values |
+| `transform(df)`     | Imputes missing values using learned distributions |
+| `fit_transform(df)` | Fit and transform in one step                      |
+
+### Example
 
 ```python
 from quicklearnkit import ProbabilisticImputer
@@ -141,43 +231,161 @@ df = sns.load_dataset("titanic")
 imputer = ProbabilisticImputer(
     group_col="pclass",
     target_col="deck",
-    random_state=42  # reproducible by default
+    random_state=42
 )
 
-df_imputed = imputer.fit_transform(df)
-
-print("Missing before:", df["deck"].isna().sum())
-print("Missing after:", df_imputed["deck"].isna().sum())
+imputed_df = imputer.fit_transform(df)
 ```
 
 ---
 
-## Randomized Data Generation
+# Plotting (Teaching-Friendly Visualization)
 
-Generate random arrays with specific characteristics:
+QuickLearnKit provides wrappers around **seaborn + matplotlib** that allow students to display values on plots using a simple switch:
+
+```python
+show_values="yes"
+```
+
+All plotting functions:
+
+* Return a **matplotlib Axes object**
+* Allow full customization (labels, limits, grids, styles)
+* Automatically display the plot by default
+
+---
+
+## Common Parameters (All Plot Functions)
+
+| Parameter     | Type             | Description                                                                      |
+| ------------- | ---------------- | -------------------------------------------------------------------------------- |
+| `data`        | pandas.DataFrame | Dataset used for plotting                                                        |
+| `x`           | str              | Column for x-axis                                                                |
+| `y`           | str              | Column for y-axis (if applicable)                                                |
+| `title`       | str or None      | Plot title                                                                       |
+| `show_values` | str              | "yes" or "no" — whether to display numeric values                                |
+| `fmt`         | str              | Format string for value labels (e.g. `{:.2f}`)                                   |
+| `show`        | bool             | If `True`, displays plot immediately. If `False`, returns Axes for customization |
+
+---
+
+## bar_plot
+
+```python
+bar_plot(data, x, y, title=None, show_values="no", fmt="{:.1f}", show=True)
+```
+
+### Example
+
+```python
+from quicklearnkit import bar_plot
+import seaborn as sns
+
+_df = sns.load_dataset("tips")
+
+ax = bar_plot(
+    _df,
+    x="day",
+    y="total_bill",
+    show_values="yes",
+    show=False
+)
+
+ax.set_xlabel("Day of Week")
+ax.set_ylabel("Average Bill")
+ax.set_ylim(0, 40)
+
+import matplotlib.pyplot as plt
+plt.show()
+```
+
+---
+
+## line_plot
+
+```python
+line_plot(data, x, y, title=None, show_values="no", fmt="{:.2f}", show=True)
+```
+
+---
+
+## scatter_plot
+
+```python
+scatter_plot(data, x, y, title=None, show_values="no", fmt="{:.2f}", show=True)
+```
+
+---
+
+## count_plot
+
+```python
+count_plot(data, x, title=None, show_values="no", show=True)
+```
+
+---
+
+## box_plot
+
+Displays **mean values** when `show_values="yes"`.
+
+```python
+box_plot(data, x=None, y=None, title=None, show_values="no", fmt="{:.2f}", show=True)
+```
+
+---
+
+## hist_plot
+
+Displays **bin counts** when `show_values="yes"`.
+
+```python
+hist_plot(data, x, bins=10, title=None, show_values="no", fmt="{:.0f}", show=True)
+```
+
+---
+
+# Random Data Generation
+
+Generate random numerical arrays for experiments and demonstrations.
 
 ```python
 from quicklearnkit import create_random
 
 random_data = create_random(mean=0, std_dev=1, size=100)
-print(random_data)
 ```
 
 ---
 
-## Contribute
+# Design Philosophy
 
-Want to improve QuickLearnKit? Fork the repository, suggest enhancements, and help make machine learning more accessible and easier to teach.
+QuickLearnKit is designed for:
+
+* **Students** learning ML and data science
+* **Educators** teaching concepts, not boilerplate
+* **Practitioners** who want fast, clean workflows
+
+It balances:
+
+> **Beginner simplicity + Advanced control**
 
 ---
 
-## License
+# Contributing
 
-This project is licensed under the MIT License.
+Want to improve QuickLearnKit?
+
+1. Fork the repository
+2. Create a feature branch
+3. Add tests and documentation
+4. Submit a pull request
 
 ---
 
-QuickLearnKit makes machine learning utilities effortless—so you can focus on **learning, experimenting, and building**, not writing complex import statements. 🚀
+# License
 
+MIT License
 
+---
 
+QuickLearnKit helps you move from *learning* to *building* faster — without sacrificing clarity or control. 🚀
