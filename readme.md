@@ -1,4 +1,4 @@
-````markdown
+
 # QuickLearnKit
 
 QuickLearnKit is a lightweight, learning-first machine learning utilities library designed to simplify model imports and streamline common ML workflows. No more deep module navigation—import models and tools effortlessly and start building.
@@ -179,5 +179,5 @@ This project is licensed under the MIT License.
 
 QuickLearnKit makes machine learning utilities effortless—so you can focus on **learning, experimenting, and building**, not writing complex import statements. 🚀
 
-````
+
 
