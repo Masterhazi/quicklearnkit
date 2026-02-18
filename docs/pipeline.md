@@ -1,7 +1,3 @@
-Here’s a cleaned, polished, and slightly expanded version of your **Pipeline (Notebook → Script Bridge)** section. I’ve tightened the language, added context, and emphasized the teaching/structuring benefits so it feels more like a guide than raw documentation:
-
----
-
 # Pipeline (Notebook → Script Bridge)
 
 QuickLearnKit includes a **Pipeline system** that helps transition from interactive notebook experimentation to clean, structured Python scripts.  
