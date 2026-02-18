@@ -11,6 +11,7 @@ from .classifier import LogisticRegressionmodel, KNeighborsClassifiermodel, Deci
 from .utils import create_random, ProbabilisticImputer
 from .randomizer import Sampler
 from .split import train_test_split
+from .pipeline import Pipeline
 from .plotting import (
     bar_plot,
     line_plot,
@@ -26,6 +27,6 @@ __all__=[
     'KNeighborsClassifiermodel', 'DecisionTreeClassifiermodel', 'RandomForestClassifiermodel','AdaBoostClassifiermodel', 
     'GradientBoostingClassifiermodel', 'XGBClassifiermodel', 'SVClassifiermodel',
     'create_random', 'Sampler', 'train_test_split', "ProbabilisticImputer","bar_plot", "line_plot", "scatter_plot", "count_plot", "box_plot",
-    "hist_plot",
+    "hist_plot", "Pipeline",
 ]
 

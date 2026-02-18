@@ -17,3 +17,7 @@ quicklearnkit.egg-info/
 .vscode/
 .DS_Store
 .env
+
+*.ipynb
+__pycache__/
+*.pyc

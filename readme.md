@@ -357,19 +357,270 @@ random_data = create_random(mean=0, std_dev=1, size=100)
 
 ---
 
-# Design Philosophy
+# Pipeline (Notebook → Script Bridge)
 
-QuickLearnKit is designed for:
+QuickLearnKit now includes a **Pipeline system** that helps you move from interactive notebook experimentation to clean, structured Python scripts.
 
-* **Students** learning ML and data science
-* **Educators** teaching concepts, not boilerplate
-* **Practitioners** who want fast, clean workflows
+The goal is to make transitioning from:
 
-It balances:
+> 🧪 Exploration in notebooks → 🧾 Reproducible `.py` pipelines
 
-> **Beginner simplicity + Advanced control**
+simple, explicit, and disciplined.
 
 ---
+
+## Creating a Pipeline
+
+```python
+from quicklearnkit import Pipeline
+
+pipe = Pipeline()
+```
+
+Each `Pipeline()` instance is isolated and independent.
+
+---
+
+## 1. Manual Commit
+
+Commit top-level functions explicitly:
+
+```python
+def preprocess(X):
+    return X
+
+def train(X):
+    return "model"
+
+pipe.commit(preprocess, outputs=["X_scaled"], stage="Preprocessing")
+pipe.commit(train, inputs=["X_scaled"], outputs=["model"], stage="Training")
+```
+
+### Parameters Explained
+
+| Parameter | Type        | Description                                      |
+| --------- | ----------- | ------------------------------------------------ |
+| `func`    | Callable    | Top-level function to include in the pipeline    |
+| `inputs`  | list of str | Expected input variable names (for validation)   |
+| `outputs` | list of str | Output variable names produced by the function   |
+| `stage`   | str         | Optional grouping label for script organization  |
+| `mode`    | str         | `"functions"` enables semi-automatic commit mode |
+
+---
+
+## 2. Semi-Automatic Commit
+
+Capture all user-defined top-level functions in the current notebook:
+
+```python
+pipe.commit(mode="functions")
+```
+
+Semi-auto mode:
+
+* Detects user-defined functions
+* Skips built-in functions
+* Skips private functions (`_helper`)
+* Skips nested functions
+* Avoids duplicates
+
+Metadata can later be updated:
+
+```python
+pipe.commit(train, inputs=["X_scaled"], outputs=["model"])
+```
+
+---
+
+## 3. Pipeline Summary
+
+Inspect committed functions and metadata:
+
+```python
+pipe.summary()
+```
+
+Example output:
+
+```
+[QuickLearn] 📦 Pipeline Summary
+
+1. preprocess
+   Stage: Preprocessing
+   Inputs: []
+   Outputs: ['X_scaled']
+
+2. train
+   Stage: Training
+   Inputs: ['X_scaled']
+   Outputs: ['model']
+```
+
+---
+
+## 4. Register Imports
+
+QuickLearnKit does **not** automatically capture notebook imports.
+Imports must be registered explicitly to be included in the compiled script.
+
+### Multiline string:
+
+```python
+pipe.add_import("""
+import pandas as pd
+import numpy as np
+from quicklearnkit import RandomForestClassifiermodel
+""")
+```
+
+### List format:
+
+```python
+pipe.add_import([
+    "import pandas as pd",
+    "import numpy as np"
+])
+```
+
+Imports are:
+
+* Validated
+* Deduplicated
+* Inserted at the top of the generated script
+
+---
+
+## 5. Dependency Validation
+
+If `inputs` and `outputs` metadata are provided, QuickLearnKit can validate logical ordering.
+
+```python
+pipe.compile("pipeline.py", validate=True)
+```
+
+Validation checks:
+
+* Missing inputs
+* Duplicate outputs
+* Incorrect dependency flow
+
+### Strict Mode
+
+```python
+pipe.compile("pipeline.py", validate="strict")
+```
+
+Strict mode raises an error instead of warning.
+
+---
+
+## 6. Compile to Script
+
+Generate a clean Python script:
+
+```python
+pipe.compile("pipeline.py")
+```
+
+Generated file includes:
+
+* Registered imports
+* Stage-based comment grouping
+* Ordered function definitions
+* A clean execution block
+
+Example structure:
+
+```python
+import pandas as pd
+
+# ==============================
+# Preprocessing
+# ==============================
+
+def preprocess(X):
+    return X
+
+# ==============================
+# Training
+# ==============================
+
+def train(X):
+    return "model"
+
+if __name__ == '__main__':
+    print('Pipeline ready.')
+```
+
+---
+
+## 7. Reset Pipeline
+
+Clear committed functions and imports:
+
+```python
+pipe.reset()
+```
+
+This resets:
+
+* Committed functions
+* Metadata
+* Imports
+* Compile lock
+
+---
+
+## Guard Rails
+
+To ensure clean compilation, QuickLearnKit prevents committing:
+
+* Lambda functions
+* Built-in functions
+* Class methods
+* Nested functions
+* Non-user-defined callables
+
+Only top-level Python functions can be committed.
+
+---
+
+## Example: Full Hybrid Workflow
+
+```python
+from quicklearnkit import Pipeline
+
+pipe = Pipeline()
+
+pipe.add_import("""
+import pandas as pd
+from quicklearnkit import RandomForestClassifiermodel
+""")
+
+def preprocess(X):
+    return X
+
+def train(X):
+    model = RandomForestClassifiermodel()
+    return model
+
+pipe.commit(preprocess, outputs=["X_clean"], stage="Preprocessing")
+pipe.commit(train, inputs=["X_clean"], outputs=["model"], stage="Training")
+
+pipe.compile("ml_pipeline.py", validate=True)
+```
+
+---
+
+This extends QuickLearnKit from a learning utility library into a structured bridge between experimentation and scripting — while keeping full control in the developer’s hands.
+
+---
+
+If you’d like next, we can:
+
+* Add a **Table of Contents** (recommended now that it's growing)
+* Split README into sections for docs hosting
+* Or prepare a clean `CHANGELOG.md` for this release
 
 # Contributing
 
