@@ -1,0 +1,26 @@
+site_name: QuickLearnKit
+site_description: Learning-first machine learning utilities with notebook-to-script pipeline bridge
+site_author: Hazi Afrid
+repo_url: https://github.com/Masterhazi/quicklearnkit
+repo_name: quicklearnkit
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - content.code.copy
+    - content.action.edit
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - Model Imports: model-imports.md
+  - Utilities: utilities.md
+  - Visualization: visualization.md
+  - Pipeline: pipeline.md
