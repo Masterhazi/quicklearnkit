@@ -1,6 +1,3 @@
-Here’s a cleaned and polished version of your README draft—structured, concise, and easy to scan:
-
----
 
 # QuickLearnKit
 
